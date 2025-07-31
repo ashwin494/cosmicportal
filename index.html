@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Message Portal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+    body {
+      filter: contrast(1.2) saturate(1.4);
+      background: url('Gemini_Generated_Image_7jlxw57jlxw57jlx.png') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container { display: flex; gap: 2rem; z-index: 1; animation: fadeIn 1.5s ease forwards; }
+    .box {
+      width: 300px; height: 180px;
+      backdrop-filter: blur(14px);
+      background: rgba(30, 30, 30, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      color: #fff;
+      display: flex; justify-content: center; align-items: center;
+      cursor: pointer;
+      font-size: 1.8rem;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+      transition: all 0.4s ease;
+    }
+    .box:hover { transform: scale(1.08); box-shadow: 0 0 25px rgba(0, 255, 255, 0.3); }
+    .modal {
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(20px);
+      padding: 2rem;
+      border-radius: 20px;
+      color: #fff;
+      width: 400px; max-width: 90%;
+      z-index: 999;
+      opacity: 0;
+      transition: all 0.4s ease;
+      pointer-events: none;
+    }
+    .modal.active { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
+    .modal textarea {
+      width: 100%; height: 150px; margin-top: 1rem; padding: 0.7rem;
+      border: none; border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff; resize: none; transition: background 0.3s ease;
+    }
+    .modal textarea:focus { background: rgba(255, 255, 255, 0.15); outline: none; }
+    .modal button {
+      margin-top: 1rem; padding: 0.6rem 1.2rem;
+      background: #00bcd4; border: none; border-radius: 10px;
+      cursor: pointer; color: #fff; font-weight: bold;
+      transition: background 0.3s ease;
+    }
+    .modal button:hover { background: #00acc1; }
+    .overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 500; opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
+    }
+    .overlay.active { opacity: 1; pointer-events: auto; }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(40px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="box" id="sendBox">SEND</div>
+    <div class="box" id="receiveBox">RECEIVED</div>
+  </div>
+  <div class="overlay" id="overlay"></div>
+
+  <div class="modal" id="sendModal">
+    <h2>Send Message</h2>
+    <textarea id="messageInput" placeholder="Type your message..."></textarea>
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <div class="modal" id="receiveModal">
+    <h2>Received Messages</h2>
+    <div id="messageDisplay" style="margin-top: 1rem;"></div>
+    <button onclick="closeModal()">Close</button>
+  </div>
+
+  
+<script>
+  const sendBox = document.getElementById('sendBox');
+  const receiveBox = document.getElementById('receiveBox');
+  const sendModal = document.getElementById('sendModal');
+  const receiveModal = document.getElementById('receiveModal');
+  const overlay = document.getElementById('overlay');
+  const messageInput = document.getElementById('messageInput');
+  const messageDisplay = document.getElementById('messageDisplay');
+
+  let messages = [];
+
+  sendBox.onclick = function () {
+    sendModal.classList.add('active');
+    overlay.classList.add('active');
+  };
+
+  receiveBox.onclick = function () {
+    updateReceivedMessages();
+    receiveModal.classList.add('active');
+    overlay.classList.add('active');
+  };
+
+  function closeModal() {
+    sendModal.classList.remove('active');
+    receiveModal.classList.remove('active');
+    overlay.classList.remove('active');
+  }
+
+  function sendMessage() {
+    const text = messageInput.value.trim();
+    if (text !== "") {
+      messages.push({ content: text });
+      messageInput.value = "";
+      closeModal();
+    }
+  }
+
+  function updateReceivedMessages() {
+    if (messages.length === 0) {
+      messageDisplay.innerHTML = "<p>No messages received yet.</p>";
+    } else {
+      messageDisplay.innerHTML = messages.map(msg =>
+        `<div style="margin-bottom: 1rem; animation: fadeIn 0.5s ease;">
+           <p>${msg.content}</p>
+         </div>`
+      ).join('');
+    }
+  }
+
+  overlay.onclick = closeModal;
+</script>
+
+</body>
+</html>
